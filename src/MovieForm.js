@@ -4,6 +4,7 @@ import axios from 'axios';
 function MovieForm({ onMoviesFetched, onRandomMovieSelected }) {
   const [movies, setMovies] = useState(['']);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false); // Loading state
 
   const addMovieField = () => {
     if (movies.length < 5) {
@@ -28,10 +29,12 @@ function MovieForm({ onMoviesFetched, onRandomMovieSelected }) {
 
   const handleRankMovies = async (e) => {
     e.preventDefault();
+    setLoading(true); // Start loading
     try {
       const nonEmptyMovies = movies.filter((movie) => movie.trim() !== '');
       if (nonEmptyMovies.length === 0) {
         setError('Please enter at least one movie.');
+        setLoading(false); // Stop loading
         return;
       }
 
@@ -40,6 +43,7 @@ function MovieForm({ onMoviesFetched, onRandomMovieSelected }) {
 
       if (validMovies.length === 0) {
         setError('No valid movies found. Please try again.');
+        setLoading(false); // Stop loading
         return;
       }
 
@@ -48,14 +52,17 @@ function MovieForm({ onMoviesFetched, onRandomMovieSelected }) {
     } catch (err) {
       setError('An error occurred. Please try again.');
     }
+    setLoading(false); // Stop loading
   };
 
   const handleRandomMovie = async (e) => {
     e.preventDefault();
+    setLoading(true); // Start loading
     try {
       const nonEmptyMovies = movies.filter((movie) => movie.trim() !== '');
       if (nonEmptyMovies.length === 0) {
         setError('Please enter at least one movie.');
+        setLoading(false); // Stop loading
         return;
       }
 
@@ -71,6 +78,14 @@ function MovieForm({ onMoviesFetched, onRandomMovieSelected }) {
     } catch (err) {
       setError('An error occurred. Please try again.');
     }
+    setLoading(false); // Stop loading
+  };
+
+  const handleClear = () => {
+    setMovies(['']);
+    setError('');
+    onMoviesFetched([]); // Clear the results
+    onRandomMovieSelected(null); // Clear any random movie
   };
 
   return (
@@ -96,7 +111,11 @@ function MovieForm({ onMoviesFetched, onRandomMovieSelected }) {
         <button type="button" onClick={handleRandomMovie}>
           Get Random Recommendation
         </button>
+        <button type="button" onClick={handleClear}>
+          Clear
+        </button>
       </div>
+      {loading && <p>Loading...</p>} {/* Show loading state */}
       {error && <p>{error}</p>}
     </form>
   );

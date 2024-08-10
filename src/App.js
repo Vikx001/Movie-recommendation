@@ -6,16 +6,21 @@ import './App.css';
 function App() {
   const [rankedMovies, setRankedMovies] = useState([]);
   const [randomMovie, setRandomMovie] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleMoviesFetched = (movies) => {
+    setLoading(true);
     const ranked = rankMovies(movies);
     setRankedMovies(ranked);
-    setRandomMovie(null);  // Clear the random movie when showing ranked movies
+    setRandomMovie(null);
+    setLoading(false);
   };
 
   const handleRandomMovieSelected = (movie) => {
+    setLoading(true);
     setRandomMovie(movie);
-    setRankedMovies([]);  // Clear the ranked movies when showing a random movie
+    setRankedMovies([]);
+    setLoading(false);
   };
 
   const rankMovies = (movies) => {
@@ -63,6 +68,7 @@ function App() {
 
   return (
     <div className="App">
+      {loading && <div className="loading-mask">Loading...</div>}
       <h1>Movie Recommendation</h1>
       <MovieForm
         onMoviesFetched={handleMoviesFetched}
